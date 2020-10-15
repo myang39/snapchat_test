@@ -1,9 +1,12 @@
 package com.example.snapchat_test
 
 import android.app.Activity
+import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -37,17 +40,26 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 0 && resultCode == Activity.RESULT_OK && data != null) {
             Log.d("Luke", "Photo was selected")
+
+            Log.d("Luke", Environment.getExternalStorageState())
             val uri = data.data
 
             // test if the uri works (yes)
-//            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-//            selected_photo.setImageBitmap(bitmap)
+            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+            selected_photo.setImageBitmap(bitmap)
             // test end
+
+
 
             Log.d("Luke", "uri: $uri")
             Log.d("Luke", "uri?.path: ${uri?.path}")
-            val file = File(uri?.path)
+            // val file = File(uri?.path)
+            val uriPathHelper = URIPathHelper()
+            val filePath = uri?.let { uriPathHelper.getPath(this, it) }
 
+            Log.d("Luke", "filePath: $filePath")
+
+            val file = File(filePath)
             Log.d("Luke", "absolutePath:" + file.absolutePath)
             // test if the file exists and points to the photo I picked
             if (file.exists()) { // somehow the file I just picked doesn't exist
