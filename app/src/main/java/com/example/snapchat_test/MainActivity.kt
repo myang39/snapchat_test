@@ -1,8 +1,6 @@
 package com.example.snapchat_test
 
 import android.app.Activity
-import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -18,6 +16,8 @@ import com.snapchat.kit.sdk.creative.media.SnapPhotoFile
 import com.snapchat.kit.sdk.creative.models.SnapPhotoContent
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 
 class MainActivity : AppCompatActivity() {
@@ -45,48 +45,70 @@ class MainActivity : AppCompatActivity() {
             val uri = data.data
 
             // test if the uri works (yes)
-            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-            selected_photo.setImageBitmap(bitmap)
+//            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+//            selected_photo.setImageBitmap(bitmap)
             // test end
 
+            // store file locally
+            if (uri != null) {
+                val file = File(cacheDir, "tempPhoto")
+                contentResolver.openInputStream(uri)?.copyTo(file.outputStream())
+
+                // snapChat part
+                val snapCreativeKitApi: SnapCreativeKitApi = SnapCreative.getApi(this)
+                val snapMediaFactory : SnapMediaFactory? = SnapCreative.getMediaFactory(this);
+                val photoFile : SnapPhotoFile?
+
+                try {
+                    photoFile = snapMediaFactory?.getSnapPhotoFromFile(file)
+                } catch (e: SnapMediaSizeException) {
+                    print(e)
+                    return
+                }
+                if (photoFile != null) {
+                    Log.d("Luke", "Sending photo to snapchat")
+                    val snapPhotoContent: SnapPhotoContent = SnapPhotoContent(photoFile)
+                    // The following line would cause the app the crash, "Failure to find the configured root..."
+                    snapCreativeKitApi.send(snapPhotoContent)
+                    Log.d("Luke", "end")
+                }
+            } // inputStream
 
 
-            Log.d("Luke", "uri: $uri")
-            Log.d("Luke", "uri?.path: ${uri?.path}")
-            // val file = File(uri?.path)
-            val uriPathHelper = URIPathHelper()
-            val filePath = uri?.let { uriPathHelper.getPath(this, it) }
-
-            Log.d("Luke", "filePath: $filePath")
-
-            val file = File(filePath)
-            Log.d("Luke", "absolutePath:" + file.absolutePath)
-            // test if the file exists and points to the photo I picked
-            if (file.exists()) { // somehow the file I just picked doesn't exist
-                Log.d("Luke", "photo file exists")
-                val myBitmap = BitmapFactory.decodeFile(file.absolutePath)
-                selected_photo.setImageBitmap(myBitmap)
-            }
+//            Log.d("Luke", "uri: $uri")
+//            Log.d("Luke", "uri?.path: ${uri?.path}")
+//            // val file = File(uri?.path)
+//            val uriPathHelper = URIPathHelper()
+//            val filePath = uri?.let { uriPathHelper.getPath(this, it) }
+//
+//            Log.d("Luke", "filePath: $filePath")
+//
+//            val file = File(filePath)
+//            Log.d("Luke", "absolutePath:" + file.absolutePath)
+//            // test if the file exists and points to the photo I picked
+//            if (file.exists()) { // somehow the file I just picked doesn't exist
+//                Log.d("Luke", "photo file exists")
+//                val myBitmap = BitmapFactory.decodeFile(file.absolutePath)
+//                selected_photo.setImageBitmap(myBitmap)
+//            }
             // test end
-
-            // snapChat part
-            val snapCreativeKitApi: SnapCreativeKitApi = SnapCreative.getApi(this)
-            val snapMediaFactory : SnapMediaFactory? = SnapCreative.getMediaFactory(this);
-            val photoFile : SnapPhotoFile?
-
-            try {
-                photoFile = snapMediaFactory?.getSnapPhotoFromFile(file)
-            } catch (e: SnapMediaSizeException) {
-                print(e)
-                return
-            }
-            if (photoFile != null) {
-                Log.d("Luke", "Sending photo to snapchat")
-                val snapPhotoContent: SnapPhotoContent = SnapPhotoContent(photoFile)
-                // The following line would cause the app the crash, "Failure to find the configured root..."
-                snapCreativeKitApi.send(snapPhotoContent)
-                Log.d("Luke", "end")
-            }
         }
     }
+
+//    fun copyInputStreamToFile(inputStream: InputStream, outputStream: FileOutputStream) {
+//        val buffer = ByteArray(8192)
+//        inputStream.use { input ->
+//            outputStream.use { fileOut ->
+//                while (true) {
+//                    val length = input.read(buffer)
+//                    if (length <= 0)
+//                        break
+//                    fileOut.write(buffer, 0, length)
+//                }
+//                fileOut.flush()
+//                fileOut.close()
+//            }
+//        }
+//        inputStream.close()
+//    }
 }
