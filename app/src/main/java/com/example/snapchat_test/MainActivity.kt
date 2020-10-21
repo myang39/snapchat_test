@@ -22,9 +22,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        sendPhotoButton.setOnClickListener {
-            sendSnapChatPhoto()
-        }
 
         sendStickers.setOnClickListener {
             sendSnapChatStickers()
@@ -49,42 +46,5 @@ class MainActivity : AppCompatActivity() {
 
         val snapCreativeKitApi = SnapCreative.getApi(this)
         snapCreativeKitApi.send(snapLensContent)
-    }
-
-    private fun sendSnapChatPhoto() {
-        val intent = Intent(Intent.ACTION_PICK);
-        intent.type = "image/*"
-        startActivityForResult(intent, 0)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 0 && resultCode == Activity.RESULT_OK && data != null) {
-
-            Log.d("Luke", Environment.getExternalStorageState())
-            val uri = data.data
-
-            // store file locally
-            if (uri != null) {
-                val file = File(cacheDir, "tempPhoto")
-                contentResolver.openInputStream(uri)?.copyTo(file.outputStream())
-
-                // snapChat part
-                val snapCreativeKitApi: SnapCreativeKitApi = SnapCreative.getApi(this)
-                val snapMediaFactory : SnapMediaFactory? = SnapCreative.getMediaFactory(this);
-                val photoFile : SnapPhotoFile?
-
-                try {
-                    photoFile = snapMediaFactory?.getSnapPhotoFromFile(file)
-                } catch (e: SnapMediaSizeException) {
-                    print(e)
-                    return
-                }
-                if (photoFile != null) {
-                    val snapPhotoContent: SnapPhotoContent = SnapPhotoContent(photoFile)
-                    snapCreativeKitApi.send(snapPhotoContent)
-                }
-            }
-        }
     }
 }
