@@ -1,21 +1,11 @@
-package com.example.snapchat_test
+package com.example.snapchat_lens_demo
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.snapchat.kit.sdk.SnapCreative
-import com.snapchat.kit.sdk.creative.api.SnapCreativeKitApi
-import com.snapchat.kit.sdk.creative.exceptions.SnapMediaSizeException
 import com.snapchat.kit.sdk.creative.media.SnapLensLaunchData
-import com.snapchat.kit.sdk.creative.media.SnapMediaFactory
-import com.snapchat.kit.sdk.creative.media.SnapPhotoFile
 import com.snapchat.kit.sdk.creative.models.SnapLensContent
-import com.snapchat.kit.sdk.creative.models.SnapPhotoContent
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +32,7 @@ class MainActivity : AppCompatActivity() {
             .addNumberKeyPair("projTeam1", 30)
             .addNumberKeyPair("projTeam2", 40).build()
         snapLensContent.snapLensLaunchData = launchData
-        snapLensContent.attachmentUrl = "https://yahoo.com"
+        snapLensContent.attachmentUrl = "https://football.fantasysports.yahoo.com" // needs to have https:// to work
 
         val snapCreativeKitApi = SnapCreative.getApi(this)
         snapCreativeKitApi.send(snapLensContent)

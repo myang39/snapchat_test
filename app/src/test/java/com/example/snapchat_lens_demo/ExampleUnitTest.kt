@@ -1,4 +1,4 @@
-package com.example.snapchat_test
+package com.example.snapchat_lens_demo
 
 import org.junit.Test
 

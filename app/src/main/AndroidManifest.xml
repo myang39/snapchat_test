@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.snapchat_test">
+    package="com.example.snapchat_lens_demo">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data android:name="com.snapchat.kit.sdk.clientId" android:value="a6f9759c-27b8-4ba2-8d2f-624b70ec13bc" />
-        <activity android:name=".MainActivity">
+        <activity android:name="com.example.snapchat_lens_demo.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
